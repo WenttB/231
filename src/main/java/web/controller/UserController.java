@@ -16,16 +16,15 @@ import web.service.UserServiceImpl;
 @RequestMapping(value = "/users" )
 public class UserController {
 
-    @Autowired
+@Autowired
     private final UserService userService = new UserServiceImpl();
 
     @GetMapping()
     public String allUsers (Model model) {
         model.addAttribute("users2",userService.allUsers());
         return "index";
-
-
     }
+
     @GetMapping(value = "/new")
     public String newUser (Model model) {
         model.addAttribute("user", new User());
