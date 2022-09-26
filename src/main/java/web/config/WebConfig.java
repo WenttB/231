@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -32,16 +33,13 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableWebMvc
 @ComponentScan("web")
-@EnableTransactionManagement (proxyTargetClass = true)
+@EnableTransactionManagement
 @PropertySource("classpath:db.properties")
+@EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
-
     private final ApplicationContext applicationContext;
-    @Resource
-
-    private Environment environment;
+    private final Environment environment;
     @Autowired
     public WebConfig(ApplicationContext applicationContext,Environment environment) {
         this.environment = environment;
@@ -52,8 +50,9 @@ public class WebConfig implements WebMvcConfigurer {
     public SpringResourceTemplateResolver templateResolver(){
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
         resolver.setApplicationContext(applicationContext);
-        resolver.setPrefix("/WEB-INF/pages/");
+        resolver.setPrefix("/WEB-INF/pages/users/");
         resolver.setSuffix(".html");
+        resolver.setCharacterEncoding("UTF-8");
         return resolver;
     }
     @Bean
@@ -66,11 +65,14 @@ public class WebConfig implements WebMvcConfigurer {
     public void configureViewResolvers (ViewResolverRegistry viewResolverRegistry) {
         ThymeleafViewResolver thymeleafViewResolver = new ThymeleafViewResolver();
         thymeleafViewResolver.setTemplateEngine(springTemplateEngine());
+        viewResolverRegistry.viewResolver(thymeleafViewResolver );
+        thymeleafViewResolver.setCharacterEncoding("UTF-8");
+        thymeleafViewResolver.setContentType("text/html; charset=UTF-8");
     }
 
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean getEntityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em
                 = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
@@ -94,8 +96,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public PlatformTransactionManager transactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-
+        transactionManager.setEntityManagerFactory(getEntityManagerFactory().getObject());
         return transactionManager;
     }
 

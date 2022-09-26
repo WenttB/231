@@ -17,11 +17,25 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> allUsers() {
-        TypedQuery<User> query = entityManager.createQuery("select u from User u",User.class);
+        Query query = entityManager.createQuery("SELECT u FROM User u",User.class);
         return query.getResultList();
 
     }
-    public void update (User upUser) {
+    public void update (long id,User upUser) {
+        User updateUser = show(id);
+        updateUser.setName(upUser.getName());
+        updateUser.setSurname(upUser.getSurname());
+        updateUser.setEmail(upUser.getEmail());
+
+    }
+    public User show (long id) {
+        Query query = entityManager.createQuery("SELECT u FROM User u WHERE u.id =:id", User.class)
+                .setParameter("id",id);
+        return (User) query.getSingleResult();
+    }
+    public void delete (long id) {
+        Query query = entityManager.createQuery("DELETE FROM User u WHERE u.id =:id").setParameter("id",id);
+                query.executeUpdate();
 
     }
 }

@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>New user</title>
+    <title>Update user</title>
 </head>
 <body>
-<form th:method="POST" th:action="@{/users2}" th:object="${user}">
+<form th:method="PATCH" th:action="@{/{id}/(id = ${users.getId()})}" th:object="${users}">
     <label for="name"> Enter name: </label>
     <input type="text" th:field="*{name}" id="name"/>
     <br/>
@@ -16,8 +16,9 @@
     <label for="email"> Enter email: </label>
     <input type="text" th:field="*{email}" id="email"/>
     <br/>
-    <input type="submit" value="Create"/>
+    <input type="submit" value="Update"/>
 
 </form>
 </body>
+</html>
 </html>
